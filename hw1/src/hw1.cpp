@@ -97,3 +97,15 @@ int main(int argc, char * argv[])
 
 	return 0;
 }
+
+void initRandomMatrix(scottgs::FloatMatrix& m)
+{
+	// Initialize each element.
+	// See discussion board for better way, 
+	// this was originally posted to be a 
+	// simple example of per-element access into the matric
+	for (unsigned i = 0; i < m.size1(); ++ i)
+	        for (unsigned j = 0; j < m.size2(); ++ j)
+		            m (i, j) = (static_cast<float>(rand()) / RAND_MAX) * 100.0;
+}
+
