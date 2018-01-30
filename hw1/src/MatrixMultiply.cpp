@@ -27,7 +27,17 @@ scottgs::FloatMatrix scottgs::MatrixMultiply::operator()(const scottgs::FloatMat
 
 	// YOUR ALGORIHM WITH COMMENTS GOES HERE:
 
+	//Basic Triple For-Loop Solution O(n^3)
+    for (unsigned int i = 0; i < result.size1(); ++i){
+        for (unsigned int j = 0; j < result.size2(); ++j){
 
+			float temp = 0.0; //better to use temp than to add to double each time, less function calls...I think
+            for (unsigned int inner = 0; inner < lhs.size2(); ++inner){
+                temp += lhs(i,inner) * rhs(inner,j);
+            }
+			result(i,j) = temp;
+        }
+    }
 	return result;
 }
 
