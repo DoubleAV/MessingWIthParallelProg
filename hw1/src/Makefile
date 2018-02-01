@@ -1,5 +1,6 @@
 # set this to what I want
-OTHER_FLAGS=$(ENV_HPC_OPTS)
+# OTHER_FLAGS=$(ENV_HPC_OPTS)
+OTHER_FLAGS= -O3
 
 # Standard all target
 all: hw1
