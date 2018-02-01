@@ -26,13 +26,17 @@ scottgs::FloatMatrix scottgs::MatrixMultiply::operator()(const scottgs::FloatMat
 
 
 	// YOUR ALGORIHM WITH COMMENTS GOES HERE:
+	//Getting rid of read function calls
+	const float result_size_one = result.size1();
+	const float result_size_two = result.size2();
+	const float lhs_size_two = lhs.size2();
 
 	//Basic Triple For-Loop Solution O(n^3)
-    for (unsigned int i = 0; i < result.size1(); ++i){
-        for (unsigned int j = 0; j < result.size2(); ++j){
+    for (unsigned int i = 0; i < result_size_one; ++i){
+        for (unsigned int j = 0; j < result_size_two; ++j){
 
 			float temp = 0.0; //better to use temp than to add to double each time, less function calls...I think
-            for (unsigned int inner = 0; inner < lhs.size2(); ++inner){
+            for (unsigned int inner = 0; inner < lhs_size_two; ++inner){
                 temp += lhs(i,inner) * rhs(inner,j);
             }
 			result(i,j) = temp;
