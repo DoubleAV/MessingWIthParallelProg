@@ -1,0 +1,25 @@
+See PDF for full details.
+
+Data Files on TC:
+
+/data/scottgs/hpc_1m.csv
+/data/scottgs/hpc_2m.csv
+/data/scottgs/hpc_3m.csv
+/data/scottgs/hpc_4m.csv
+/data/scottgs/hpc_5m.csv
+/data/scottgs/hpc_6m.csv
+/data/scottgs/hpc_7m.csv
+/data/scottgs/hpc_8m.csv
+/data/scottgs/hpc_9m.csv
+
+
+For submission, you must have only source code and headers and build sytem support files.
+
+Depending on your build system:
+Use make clean or make distclean or remove an out of source build folder.
+
+Test your submission by doing a fresh clone from your master into a temp folder and ensure it builds / runs.
+e.g., 
+git clone <addr_to_student_work> temp_folder_name
+
+
