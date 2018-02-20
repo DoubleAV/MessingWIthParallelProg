@@ -84,7 +84,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/double/Development/hpc18_aavr56/hw2/hpc_1m.csv">
+		<Unit filename="/home/double/Development/hpc18_aavr56/hw2/cmake-build-debug/hpc_1m.csv">
 			<Option target="hw2"/>
 		</Unit>
 		<Unit filename="/home/double/Development/hpc18_aavr56/hw2/main.cpp">
