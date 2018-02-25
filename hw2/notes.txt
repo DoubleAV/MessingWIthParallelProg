@@ -1,0 +1,12 @@
+Initially tried a map, didn't see why I needed to use a map because order really isn't important.
+
+Then I tried using an unordered_map, realized I had some issues with multiple identical key values.
+    - tried doing a map that consisted of an int(the argmax 0-20) and a vector that contained the (x,y) pairs that 
+        corresponded to the argmax
+    - I didn't understand the concept of buckets before this assignment, and understanding what exactly they were took me a while
+
+
+Then I found out about unordered_multimap, where I could have multiple of the same keys, and it functions internally the same way
+    as an unordered map.
+    - On my first attempts , I'm filling up the unordered_multimap as I'm parsing the file, which I think I'm not supposed
+        to do. I might try and load everything into 

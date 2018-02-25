@@ -121,6 +121,7 @@ int main(int argc, char* argv[1]) {
         //Start time for getting the count of buckets
         high_resolution_clock::time_point bucket_count_start = high_resolution_clock::now();
 
+        //get the count of the buckets
         for (auto& i: {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}) {
             std::cout << i << ": " << arg_mm.count(i) << " entries.\n";
         }
