@@ -151,7 +151,7 @@ int main(int argc, char* argv[1]) {
         }
         else
         {
-            std::cout << "Successful semget resulted in (" << semId << std::endl;
+            // std::cout << "Successful semget resulted in (" << semId << std::endl;
         }
 
         // Initialize the semaphore
@@ -169,7 +169,7 @@ int main(int argc, char* argv[1]) {
         }
         else
         {
-            std::cout << "Init: Initialized (" << semId << ")" << std::endl; 
+            // std::cout << "Init: Initialized (" << semId << ")" << std::endl; 
         }
 
         // =============================
@@ -220,11 +220,11 @@ int main(int argc, char* argv[1]) {
             exit(1);
         }
         
-        std::cout << "I just forked without error, I see ("<< pid <<")" << std::endl;
+        // std::cout << "I just forked without error, I see ("<< pid <<")" << std::endl;
         
         if ( pid == 0 ) // Child process 
         {
-            std::cout << "In the child (if): " << std::endl; 
+            // std::cout << "In the child (if): " << std::endl; 
             
             while (lastIndexProcessed < targetBucketNum)
             {
@@ -236,7 +236,7 @@ int main(int argc, char* argv[1]) {
                 // Set up the sembuf structure.
                 operations[0].sem_op = -1; 	// this is the operation... the value is added to semaphore (a P-Op = -1)
 
-                std::cout << "In the child (if): about to blocking wait on semaphore" << std::endl; 
+                // std::cout << "In the child (if): about to blocking wait on semaphore" << std::endl; 
                 int retval = semop(semId, operations, numOps);
 
                 if(0 == retval)
@@ -244,13 +244,13 @@ int main(int argc, char* argv[1]) {
                     // Compute the next bucket count
                     const unsigned long index = *sharedBucketPtr;
 
-                    std::cout << "In the child (if): Successful P-operation on (" << semId << "), bucket index=" << index << std::endl; 
+                    // std::cout << "In the child (if): Successful P-operation on (" << semId << "), bucket index=" << index << std::endl; 
 
                     if (index <= targetBucketNum)
                     {
-                        std::cout << "In the child (if): computing bucket index (" << index << ")" ; 
+                        // std::cout << "In the child (if): computing bucket index (" << index << ")" ; 
                         shm[index] = arg_mm.count(index);
-                        std::cout << "as (" << shm[index] << ")" << std::endl; 
+                        // std::cout << "as (" << shm[index] << ")" << std::endl; 
                     }
                     *sharedBucketPtr += 1;
                     // mark the last index processed
@@ -267,15 +267,15 @@ int main(int argc, char* argv[1]) {
                 // Release the semaphore (V-op)
                 operations[0].sem_op = 1; 	// this the operation... the value is added to semaphore (a V-Op = 1)
             
-                std::cout << "In the child (if): about to release semaphore" << std::endl; 
+                // std::cout << "In the child (if): about to release semaphore" << std::endl; 
                 retval = semop(semId, operations, numOps);
                 if(0 == retval)
                 {
-                    std::cout << "In the child (if): Successful V-operation on (" << semId << ")" << std::endl; 
+                    // std::cout << "In the child (if): Successful V-operation on (" << semId << ")" << std::endl; 
                 }
                 else
                 {
-                    std::cerr << "In the child (if): Failed V-operation on (" << semId << ")" << std::endl; 
+                    // std::cerr << "In the child (if): Failed V-operation on (" << semId << ")" << std::endl; 
                 }
             
             } // END of while we have not computed the full sequence
@@ -284,7 +284,7 @@ int main(int argc, char* argv[1]) {
         } 
         else		// Parent Process
         {
-            std::cout << "In the parent (if-else): " << std::endl; 
+            // std::cout << "In the parent (if-else): " << std::endl; 
             
             while (lastIndexProcessed <= targetBucketNum)
             {
@@ -296,7 +296,7 @@ int main(int argc, char* argv[1]) {
                 // Set up the sembuf structure.
                 operations[0].sem_op = -1; 	// this is the operation... the value is added to semaphore (a P-Op = -1)
 
-                std::cout << "In the child (if): about to blocking wait on semaphore" << std::endl; 
+                // std::cout << "In the child (if): about to blocking wait on semaphore" << std::endl; 
                 int retval = semop(semId, operations, numOps);
 
                 if(0 == retval)
@@ -304,13 +304,13 @@ int main(int argc, char* argv[1]) {
                     // Compute the next bucket count
                     const unsigned long index = *sharedBucketPtr;
                     
-                    std::cout << "In the parent (if-else): Successful P-operation on (" << semId << "), index=" << index << std::endl; 
+                    // std::cout << "In the parent (if-else): Successful P-operation on (" << semId << "), index=" << index << std::endl; 
 
                     if (index <= targetBucketNum)
                     {
-                        std::cout << "In the parent (if-else): computing index (" << index << ")" ; 
+                        // std::cout << "In the parent (if-else): computing index (" << index << ")" ; 
                         shm[index] = arg_mm.count(index);
-                        std::cout << "as (" << shm[index] << ")" << std::endl; 
+                        // std::cout << "as (" << shm[index] << ")" << std::endl; 
                     }
                     *sharedBucketPtr += 1;
                     // mark the last index processed
@@ -328,11 +328,11 @@ int main(int argc, char* argv[1]) {
                 // Release the semaphore (V-op)
                 operations[0].sem_op = 1; 	// this the operation... the value is added to semaphore (a V-Op = 1)
             
-                std::cout << "In the parent (if-else): about to release semaphore" << std::endl; 
+                // std::cout << "In the parent (if-else): about to release semaphore" << std::endl; 
                 retval = semop(semId, operations, numOps);
                 if(0 == retval)
                 {
-                    std::cout << "In the parent (if-else): Successful V-operation on (" << semId << ")" << std::endl; 
+                    // std::cout << "In the parent (if-else): Successful V-operation on (" << semId << ")" << std::endl; 
                 }
                 else
                 {
@@ -352,7 +352,7 @@ int main(int argc, char* argv[1]) {
         // All this code is boiler-plate	
         // ============================== 
 
-        std::cout << "In the parent: " << std::endl; 
+        // std::cout << "In the parent: " << std::endl; 
 
         int status;	// catch the status of the child
 
