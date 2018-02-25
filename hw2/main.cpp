@@ -403,6 +403,9 @@ int main(int argc, char* argv[1]) {
         //calculate time to count buckets
         duration<double> count_time = duration_cast<duration<double>>(bucket_count_end - bucket_count_start);
         std::cout << "Bucket Count Time: " << count_time.count() << " seconds." << "\n";
+
+
+        shmctl(shmId, IPC_RMID, NULL);
     }
 
     return 0;
