@@ -22,4 +22,12 @@ Test your submission by doing a fresh clone from your master into a temp folder 
 e.g., 
 git clone <addr_to_student_work> temp_folder_name
 
+build instructions:
 
+after cd'ing into hw2 directory:
+	mkdir build
+	cmake ..
+	make
+	./hw2 ~/csvs/any of the hpc_#m.csv files
+
+I was not able to get more than two processes working so only two command line arguments are taken. 
