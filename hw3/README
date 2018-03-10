@@ -13,7 +13,7 @@ Data Files on TC:
 /data/scottgs/hpc_9m.csv
 
 
-For submission, you must have only source code and headers and build sytem support files.
+For submission, you must have only source code and headers and build system support files.
 
 Depending on your build system:
 Use make clean or make distclean or remove an out of source build folder.
@@ -22,4 +22,12 @@ Test your submission by doing a fresh clone from your master into a temp folder 
 e.g., 
 git clone <addr_to_student_work> temp_folder_name
 
+build instructions:
 
+after cd'ing into hw3 directory:
+	mkdir build
+	cmake ..
+	make
+	./hw3 ~/csvs/any of the hpc_#m.csv files
+
+I was not able to get more than two processes working so only two command line arguments are taken. 
