@@ -8,3 +8,5 @@ if(UNIX)
 endif()
 
 add_executable(hw3 main.cpp)
+
+TARGET_LINK_LIBRARIES(hw3 pthread)

@@ -24,10 +24,10 @@ git clone <addr_to_student_work> temp_folder_name
 
 build instructions:
 
-after cd'ing into hw3 directory:
+after cd'ing into my hw3 directory:
 	mkdir build
 	cmake ..
 	make
-	./hw3 ~/csvs/any of the hpc_#m.csv files
+	./hw3 any_hpc_#m.csv_files
 
-I was not able to get more than two processes working so only two command line arguments are taken. 
+the command line argument for number of threads is a W.I.P., as is the SBATCH file.

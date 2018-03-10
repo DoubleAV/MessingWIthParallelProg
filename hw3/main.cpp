@@ -12,6 +12,9 @@
 #include <cstdlib>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
+#include <thread>
+#include <functional>
+#include <pthread.h>
 #define earthRadiusKm 6371.0
 
 using namespace std;
@@ -19,7 +22,13 @@ using namespace std;
 double deg2rad(double deg);
 double rad2deg(double rad);
 double haversineDistance(double lat1d, double lon1d, double lat2d, double lon2d);
+void build_matrix(std::unordered_multimap<int, std::pair<double, double>> arg_mm, int index);
+void build_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_mm);
+void build_threaded_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_mm);
+static void parallel_for(unsigned nb_elements, std::function<void (int start, int end)> functor, bool use_threads);
 
+using namespace std::chrono;
+using namespace boost::numeric::ublas;
 
 int main(int argc, char* argv[1]) {
 
@@ -128,49 +137,52 @@ int main(int argc, char* argv[1]) {
         matrix<double> h_dist_matrix;
 
         //build haversine distance matrix for each bucket under 5001 elements
-        for (auto& i: {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}) {
-            if (arg_mm.count(i) < 5001){
-                int size = arg_mm.count(i);
-                std::cout << i << ": " << size << " entries." << "\n";
-                h_dist_matrix.resize(size, size, false);
-                //equal_range returns a pair of bounds for the items in the container of the 
-                //specified key.
-                auto j_its = arg_mm.equal_range(i);
-                auto k_its = arg_mm.equal_range(i);
-                auto j_it = j_its.first;
-                auto k_it = k_its.first;
+        // for (auto& i: {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}) {
+        //     if (arg_mm.count(i) < 5001){
+        //         int size = arg_mm.count(i);
+        //         std::cout << i << ": " << size << " entries." << "\n";
+        //         h_dist_matrix.resize(size, size, false);
+        //         //equal_range returns a pair of bounds for the items in the container of the 
+        //         //specified key.
+        //         auto j_its = arg_mm.equal_range(i);
+        //         auto k_its = arg_mm.equal_range(i);
+        //         auto j_it = j_its.first;
+        //         auto k_it = k_its.first;
 
-                for (unsigned int j = 0; j < h_dist_matrix.size1(); ++j) {
+        //         for (unsigned int j = 0; j < h_dist_matrix.size1(); ++j) {
                     
-                    //conditional to check if it's gone through every item in the bucket
-                    if (j_it != j_its.second){
-                        for (unsigned k = 0; k < h_dist_matrix.size2(); ++k) {
+        //             //conditional to check if it's gone through every item in the bucket
+        //             if (j_it != j_its.second){
+        //                 for (unsigned k = 0; k < h_dist_matrix.size2(); ++k) {
 
-                            if (k_it != k_its.second){
-                                h_dist_matrix(j, k) = haversineDistance(j_it->second.first, j_it->second.second,
-                                 k_it->second.first, k_it->second.second);
-                                 ++k_it;
-                            }
-                        }
-                        ++j_it;
-                    }
-                }//finish building matrix
+        //                     if (k_it != k_its.second){
+        //                         h_dist_matrix(j, k) = haversineDistance(j_it->second.first, j_it->second.second,
+        //                          k_it->second.first, k_it->second.second);
+        //                          ++k_it;
+        //                     }
+        //                 }
+        //                 ++j_it;
+        //             }
+        //         }//finish building matrix
 
-                //compute matrix average
-                double sum = 0;
-                for (unsigned int j = 0; j < h_dist_matrix.size1(); ++j){
-                    for (unsigned int k = 0; k < h_dist_matrix.size2(); ++k){
-                        sum += h_dist_matrix(j, k);
-                    }
-                }
-                double average = sum / (h_dist_matrix.size1() * h_dist_matrix.size2());
-                std::cout << "Average of matrix is: " << average << " meters" << "\n";
+        //         //compute matrix average
+        //         double sum = 0;
+        //         for (unsigned int j = 0; j < h_dist_matrix.size1(); ++j){
+        //             for (unsigned int k = 0; k < h_dist_matrix.size2(); ++k){
+        //                 sum += h_dist_matrix(j, k);
+        //             }
+        //         }
+        //         double average = sum / (h_dist_matrix.size1() * h_dist_matrix.size2());
+        //         std::cout << "Average of matrix is: " << average << " meters" << "\n";
 
-                //std::cout << h_dist_matrix << '\n';
-                h_dist_matrix.clear();
+        //         //std::cout << h_dist_matrix << '\n';
+        //         h_dist_matrix.clear();
                 
-            }
-        }
+        //     }
+        // }
+
+        //build_matrices(arg_mm);
+        build_threaded_matrices(arg_mm);
 
         //bucket count end time
         high_resolution_clock::time_point bucket_count_end = high_resolution_clock::now();
@@ -201,4 +213,118 @@ double haversineDistance(double lat1d, double lon1d, double lat2d, double lon2d)
 
     //divide by 1000 to get meters
     return 2.0 * earthRadiusKm / 1000.0 * asin(sqrt(u * u + cos(lat1r) * cos(lat2r) * v * v));
+}
+
+void build_matrix(std::unordered_multimap<int, std::pair<double, double>> arg_mm, int index) {
+
+    
+    matrix<double> h_dist_matrix;
+
+    if (arg_mm.count(index) < 5001){
+        int size = arg_mm.count(index);
+        std::cout << index << ": " << size << " entries." << "\n";
+        h_dist_matrix.resize(size, size, false);
+        //equal_range returns a pair of bounds for the items in the container of the 
+        //specified key.
+        auto j_its = arg_mm.equal_range(index);
+        auto k_its = arg_mm.equal_range(index);
+        auto j_it = j_its.first;
+        auto k_it = k_its.first;
+
+        for (unsigned int j = 0; j < h_dist_matrix.size1(); ++j) {
+            
+            //conditional to check if it's gone through every item in the bucket
+            if (j_it != j_its.second){
+                for (unsigned k = 0; k < h_dist_matrix.size2(); ++k) {
+
+                    if (k_it != k_its.second){
+                        h_dist_matrix(j, k) = haversineDistance(j_it->second.first, j_it->second.second,
+                            k_it->second.first, k_it->second.second);
+                            ++k_it;
+                    }
+                }
+                ++j_it;
+            }
+        }//finish building matrix
+
+        //compute matrix average
+        double sum = 0;
+        for (unsigned int j = 0; j < h_dist_matrix.size1(); ++j){
+            for (unsigned int k = 0; k < h_dist_matrix.size2(); ++k){
+                sum += h_dist_matrix(j, k);
+            }
+        }
+        double average = sum / (h_dist_matrix.size1() * h_dist_matrix.size2());
+        std::cout << "Average of matrix is: " << average << " meters" << "\n";
+
+        //std::cout << h_dist_matrix << '\n';
+        h_dist_matrix.clear();
+    }
+
+}
+
+void build_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_mm){
+    for (unsigned int i = 0; i < 21; ++i){
+        build_matrix(arg_mm, i);
+    }
+}
+
+void build_threaded_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_mm) {
+    unsigned index = 21;
+    parallel_for(index, [&](int start = 0, int end = 6) {
+        for (int i = start; i < end; ++i) {
+            build_matrix(arg_mm, i);
+        }
+    }, true);
+}
+
+static
+void parallel_for(unsigned nb_elements, std::function<void (int start, int end)> functor,
+                  bool use_threads = true) {
+    // -------
+    /// @param[in] nb_elements : size of your for loop
+    /// @param[in] functor(start, end) :
+    /// your function processing a sub chunk of the for loop.
+    /// "start" is the first index to process (included) until the index "end"
+    /// (excluded)
+    /// @code
+    ///     for(int i = start; i < end; ++i)
+    ///         computation(i);
+    /// @endcode
+    /// @param use_threads : enable / disable threads.
+    ///
+
+    unsigned nb_threads_hint = std::thread::hardware_concurrency();
+    unsigned nb_threads = nb_threads_hint == 0 ? 8 : (nb_threads_hint);
+
+    unsigned batch_size = nb_elements / nb_threads;
+    unsigned batch_remainder = nb_elements % nb_threads;
+
+    std::vector< std::thread > my_threads(nb_threads);
+
+    if( use_threads )
+    {
+        // Multithread execution
+        for(unsigned i = 0; i < nb_threads; ++i)
+        {
+            int start = i * batch_size;
+            my_threads[i] = std::thread(functor, start, start+batch_size);
+        }
+    }
+    else
+    {
+        // Single thread execution (for easy debugging)
+        for(unsigned i = 0; i < nb_threads; ++i){
+            int start = i * batch_size;
+            functor( start, start+batch_size );
+        }
+    }
+
+    // Deform the elements left
+    int start = nb_threads * batch_size;
+    functor( start, start+batch_remainder);
+
+    // Wait for the other thread to finish their task
+    if( use_threads )
+        std::for_each(my_threads.begin(), my_threads.end(), std::mem_fn(&std::thread::join));
 }
