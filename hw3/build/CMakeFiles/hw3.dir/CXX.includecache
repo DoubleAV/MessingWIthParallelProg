@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/double/Development/hpc18_aavr56/hw3/main.cpp
+iostream
+-
+math.h
+-
+fstream
+-
+sstream
+-
+chrono
+-
+vector
+-
+tuple
+-
+map
+-
+unordered_map
+-
+algorithm
+-
+cmath
+-
+cstdlib
+-
+boost/numeric/ublas/matrix.hpp
+-
+boost/numeric/ublas/io.hpp
+-
+
