@@ -125,7 +125,6 @@ int main(int argc, char* argv[1]) {
         //Start time for getting the count of buckets
         high_resolution_clock::time_point bucket_count_start = high_resolution_clock::now();
 
-        std::vector<matrix<double>> matrices;
         matrix<double> h_dist_matrix;
 
         //build haversine distance matrix for each bucket under 5001 elements
@@ -167,7 +166,6 @@ int main(int argc, char* argv[1]) {
                 double average = sum / (h_dist_matrix.size1() * h_dist_matrix.size2());
                 std::cout << "Average of matrix is: " << average << " meters" << "\n";
 
-                matrices.push_back(h_dist_matrix);
                 //std::cout << h_dist_matrix << '\n';
                 h_dist_matrix.clear();
                 
