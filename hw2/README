@@ -28,6 +28,6 @@ after cd'ing into hw2 directory:
 	mkdir build
 	cmake ..
 	make
-	./hw2 ~/csvs/any of the hpc_#m.csv files
+	./hw2 $PATH_TO_hpc_#m.csv_FILES
 
 I was not able to get more than two processes working so only two command line arguments are taken. 
