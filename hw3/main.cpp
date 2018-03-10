@@ -126,13 +126,14 @@ int main(int argc, char* argv[1]) {
         high_resolution_clock::time_point bucket_count_start = high_resolution_clock::now();
 
         std::vector<matrix<double>> matrices;
+        matrix<double> h_dist_matrix;
 
         //build haversine distance matrix for each bucket under 5001 elements
         for (auto& i: {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}) {
             if (arg_mm.count(i) < 5001){
                 int size = arg_mm.count(i);
                 std::cout << i << ": " << size << " entries.\n";
-                matrix<double> h_dist_matrix (size, size);
+                h_dist_matrix.resize(size, size, false);
                 //equal_range returns a pair of bounds for the items in the container of the 
                 //specified key.
                 auto j_its = arg_mm.equal_range(i);
@@ -146,18 +147,19 @@ int main(int argc, char* argv[1]) {
                     if (j_it != j_its.second){
                         for (unsigned k = 0; k < h_dist_matrix.size2(); ++k) {
 
-                            
                             if (k_it != k_its.second){
                                 h_dist_matrix(j, k) = haversineDistance(j_it->second.first, j_it->second.second,
                                  k_it->second.first, k_it->second.second);
+                                 ++k_it;
                             }
-                            ++k_it;
                         }
+                        ++j_it;
                     }
-                    ++j_it;
-                }
+                }//finish building matrix
+
                 matrices.push_back(h_dist_matrix);
-                std::cout << h_dist_matrix << '\n';
+                //std::cout << h_dist_matrix << '\n';
+                h_dist_matrix.clear();
             }
         }
 
