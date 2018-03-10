@@ -56,8 +56,8 @@ int main(int argc, char* argv[1]) {
 
         double lines_count = 0;
 
-       // while (data.good()) {
-    for (int i = 0; i<20; i++){
+        while (data.good()) {
+    //for (int i = 0; i<500; i++){
 
             //clears the temporary feature vector at the start of each loop so that each line's features can be added to the map
             //as one vector and the other stuff isn't included from the previous iteration.
@@ -132,7 +132,7 @@ int main(int argc, char* argv[1]) {
         for (auto& i: {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}) {
             if (arg_mm.count(i) < 5001){
                 int size = arg_mm.count(i);
-                std::cout << i << ": " << size << " entries.\n";
+                std::cout << i << ": " << size << " entries." << "\n";
                 h_dist_matrix.resize(size, size, false);
                 //equal_range returns a pair of bounds for the items in the container of the 
                 //specified key.
@@ -157,9 +157,20 @@ int main(int argc, char* argv[1]) {
                     }
                 }//finish building matrix
 
+                //compute matrix average
+                double sum = 0;
+                for (unsigned int j = 0; j < h_dist_matrix.size1(); ++j){
+                    for (unsigned int k = 0; k < h_dist_matrix.size2(); ++k){
+                        sum += h_dist_matrix(j, k);
+                    }
+                }
+                double average = sum / (h_dist_matrix.size1() * h_dist_matrix.size2());
+                std::cout << "Average of matrix is: " << average << " meters" << "\n";
+
                 matrices.push_back(h_dist_matrix);
                 //std::cout << h_dist_matrix << '\n';
                 h_dist_matrix.clear();
+                
             }
         }
 
@@ -167,7 +178,7 @@ int main(int argc, char* argv[1]) {
         high_resolution_clock::time_point bucket_count_end = high_resolution_clock::now();
         //calculate time to count buckets
         duration<double> count_time = duration_cast<duration<double>>(bucket_count_end - bucket_count_start);
-        std::cout << "Bucket Count Time: " << count_time.count() << " seconds." << "\n";
+        std::cout << "Time to build matrices and compute averages: " << count_time.count() << " seconds." << "\n";
     }
 
     return 0;
