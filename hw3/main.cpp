@@ -24,13 +24,13 @@ double rad2deg(double rad);
 double haversineDistance(double lat1d, double lon1d, double lat2d, double lon2d);
 void build_matrix(std::unordered_multimap<int, std::pair<double, double>> arg_mm, int index);
 void build_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_mm);
-void build_threaded_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_mm);
-static void parallel_for(unsigned nb_elements, std::function<void (int start, int end)> functor, bool use_threads);
+void build_threaded_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_mm, unsigned int num_threads);
+static void parallel_for(unsigned int num_threads, unsigned nb_elements, std::function<void (int start, int end)> functor, bool use_threads);
 
 using namespace std::chrono;
 using namespace boost::numeric::ublas;
 
-int main(int argc, char* argv[1]) {
+int main(int argc, char* argv[2]) {
 
     using namespace std::chrono;
     using namespace boost::numeric::ublas;
@@ -38,11 +38,17 @@ int main(int argc, char* argv[1]) {
     //Start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
-    if (argc != 2){
-        cout<<"usage: "<< argv[0] <<" <filename>\n";
+    if (argc != 3){
+        cout<<"usage: "<< argv[0] << " <number of threads>" << " <filename>\n";
     } else {
 
-        ifstream data(argv[1]);
+        istringstream ss(argv[1]);
+        unsigned int num_threads;
+        if (!(ss>>num_threads)){
+            cerr << "Invalid number " <<argv[1] << '\n';
+        }
+
+        ifstream data(argv[2]);
 
         //Make sure the file opens correctly
         if (!data.is_open()) std::cout << "Error on: File Open" << '\n';
@@ -136,53 +142,9 @@ int main(int argc, char* argv[1]) {
 
         matrix<double> h_dist_matrix;
 
-        //build haversine distance matrix for each bucket under 5001 elements
-        // for (auto& i: {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}) {
-        //     if (arg_mm.count(i) < 5001){
-        //         int size = arg_mm.count(i);
-        //         std::cout << i << ": " << size << " entries." << "\n";
-        //         h_dist_matrix.resize(size, size, false);
-        //         //equal_range returns a pair of bounds for the items in the container of the 
-        //         //specified key.
-        //         auto j_its = arg_mm.equal_range(i);
-        //         auto k_its = arg_mm.equal_range(i);
-        //         auto j_it = j_its.first;
-        //         auto k_it = k_its.first;
-
-        //         for (unsigned int j = 0; j < h_dist_matrix.size1(); ++j) {
-                    
-        //             //conditional to check if it's gone through every item in the bucket
-        //             if (j_it != j_its.second){
-        //                 for (unsigned k = 0; k < h_dist_matrix.size2(); ++k) {
-
-        //                     if (k_it != k_its.second){
-        //                         h_dist_matrix(j, k) = haversineDistance(j_it->second.first, j_it->second.second,
-        //                          k_it->second.first, k_it->second.second);
-        //                          ++k_it;
-        //                     }
-        //                 }
-        //                 ++j_it;
-        //             }
-        //         }//finish building matrix
-
-        //         //compute matrix average
-        //         double sum = 0;
-        //         for (unsigned int j = 0; j < h_dist_matrix.size1(); ++j){
-        //             for (unsigned int k = 0; k < h_dist_matrix.size2(); ++k){
-        //                 sum += h_dist_matrix(j, k);
-        //             }
-        //         }
-        //         double average = sum / (h_dist_matrix.size1() * h_dist_matrix.size2());
-        //         std::cout << "Average of matrix is: " << average << " meters" << "\n";
-
-        //         //std::cout << h_dist_matrix << '\n';
-        //         h_dist_matrix.clear();
-                
-        //     }
-        // }
 
         //build_matrices(arg_mm);
-        build_threaded_matrices(arg_mm);
+        build_threaded_matrices(arg_mm, num_threads);
 
         //bucket count end time
         high_resolution_clock::time_point bucket_count_end = high_resolution_clock::now();
@@ -269,9 +231,9 @@ void build_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_
     }
 }
 
-void build_threaded_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_mm) {
+void build_threaded_matrices(std::unordered_multimap<int, std::pair<double, double>> arg_mm, unsigned int num_threads) {
     unsigned index = 21;
-    parallel_for(index, [&](int start = 0, int end = 6) {
+    parallel_for(num_threads, index, [&](int start = 0, int end = 6) {
         for (int i = start; i < end; ++i) {
             build_matrix(arg_mm, i);
         }
@@ -279,7 +241,7 @@ void build_threaded_matrices(std::unordered_multimap<int, std::pair<double, doub
 }
 
 static
-void parallel_for(unsigned nb_elements, std::function<void (int start, int end)> functor,
+void parallel_for(unsigned int num_threads, unsigned nb_elements, std::function<void (int start, int end)> functor,
                   bool use_threads = true) {
     // -------
     /// @param[in] nb_elements : size of your for loop
@@ -294,18 +256,19 @@ void parallel_for(unsigned nb_elements, std::function<void (int start, int end)>
     /// @param use_threads : enable / disable threads.
     ///
 
+    //Gets the most threads possible allowed by the hardware.
     unsigned nb_threads_hint = std::thread::hardware_concurrency();
     unsigned nb_threads = nb_threads_hint == 0 ? 8 : (nb_threads_hint);
 
-    unsigned batch_size = nb_elements / nb_threads;
-    unsigned batch_remainder = nb_elements % nb_threads;
+    unsigned batch_size = nb_elements / num_threads;
+    unsigned batch_remainder = nb_elements % num_threads;
 
-    std::vector< std::thread > my_threads(nb_threads);
+    std::vector< std::thread > my_threads(num_threads);
 
     if( use_threads )
     {
         // Multithread execution
-        for(unsigned i = 0; i < nb_threads; ++i)
+        for(unsigned i = 0; i < num_threads; ++i)
         {
             int start = i * batch_size;
             my_threads[i] = std::thread(functor, start, start+batch_size);
@@ -314,14 +277,14 @@ void parallel_for(unsigned nb_elements, std::function<void (int start, int end)>
     else
     {
         // Single thread execution (for easy debugging)
-        for(unsigned i = 0; i < nb_threads; ++i){
+        for(unsigned i = 0; i < num_threads; ++i){
             int start = i * batch_size;
             functor( start, start+batch_size );
         }
     }
 
     // Deform the elements left
-    int start = nb_threads * batch_size;
+    int start = num_threads * batch_size;
     functor( start, start+batch_remainder);
 
     // Wait for the other thread to finish their task
