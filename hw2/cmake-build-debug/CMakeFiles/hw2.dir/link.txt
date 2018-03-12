@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -std=gnu++0x -g  -rdynamic CMakeFiles/hw2.dir/main.cpp.o  -o hw2 

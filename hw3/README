@@ -28,6 +28,4 @@ after cd'ing into my hw3 directory:
 	mkdir build
 	cmake ..
 	make
-	./hw3 any_hpc_#m.csv_files
-
-the command line argument for number of threads is a W.I.P., as is the SBATCH file.
+	./hw3 #number_of_threads any_hpc_#m.csv_file

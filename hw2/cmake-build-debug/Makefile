@@ -48,10 +48,10 @@ RM = /home/double/Downloads/clion-2017.3.2/bin/cmake/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/double/Development/hpc18_aavr56/hw0
+CMAKE_SOURCE_DIR = /home/double/Development/hpc18_aavr56/hw2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/double/Development/hpc18_aavr56/hw0/cmake-build-debug
+CMAKE_BINARY_DIR = /home/double/Development/hpc18_aavr56/hw2/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/double/Development/hpc18_aavr56/hw0/cmake-build-debug/CMakeFiles /home/double/Development/hpc18_aavr56/hw0/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/double/Development/hpc18_aavr56/hw2/cmake-build-debug/CMakeFiles /home/double/Development/hpc18_aavr56/hw2/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/double/Development/hpc18_aavr56/hw0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/double/Development/hpc18_aavr56/hw2/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named hw0
+# Target rules for targets named hw2
 
 # Build rule for target.
-hw0: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 hw0
-.PHONY : hw0
+hw2: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 hw2
+.PHONY : hw2
 
 # fast build rule for target.
-hw0/fast:
-	$(MAKE) -f CMakeFiles/hw0.dir/build.make CMakeFiles/hw0.dir/build
-.PHONY : hw0/fast
+hw2/fast:
+	$(MAKE) -f CMakeFiles/hw2.dir/build.make CMakeFiles/hw2.dir/build
+.PHONY : hw2/fast
 
 main.o: main.cpp.o
 
@@ -129,7 +129,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	$(MAKE) -f CMakeFiles/hw0.dir/build.make CMakeFiles/hw0.dir/main.cpp.o
+	$(MAKE) -f CMakeFiles/hw2.dir/build.make CMakeFiles/hw2.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -138,7 +138,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) -f CMakeFiles/hw0.dir/build.make CMakeFiles/hw0.dir/main.cpp.i
+	$(MAKE) -f CMakeFiles/hw2.dir/build.make CMakeFiles/hw2.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -147,7 +147,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) -f CMakeFiles/hw0.dir/build.make CMakeFiles/hw0.dir/main.cpp.s
+	$(MAKE) -f CMakeFiles/hw2.dir/build.make CMakeFiles/hw2.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -158,7 +158,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... hw0"
+	@echo "... hw2"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

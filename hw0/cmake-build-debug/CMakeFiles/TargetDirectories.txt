@@ -1,3 +1,0 @@
-/home/double/Development/hpc18_aavr56/hw0/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/double/Development/hpc18_aavr56/hw0/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/double/Development/hpc18_aavr56/hw0/cmake-build-debug/CMakeFiles/hw0.dir
